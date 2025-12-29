@@ -8,7 +8,4 @@ public class Discount
     public double Rate { get; set; }
 
     public bool IsUsed { get; set; }
-
-
-
 }

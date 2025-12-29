@@ -2,6 +2,5 @@
 
 public enum EventType
 {
-
-    UserCreated = 1,
+    UserCreated = 1
 }

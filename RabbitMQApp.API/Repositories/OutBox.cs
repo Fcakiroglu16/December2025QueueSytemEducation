@@ -13,6 +13,4 @@ public class OutBox
 
     public Guid IdempotencyKey { get; set; }
     public bool IsSent { get; set; }
-
-
 }

@@ -12,6 +12,4 @@ public class Inbox
     public DateTime CreatedAt { get; set; }
 
     public bool IsProcess { get; set; }
-
-
 }
