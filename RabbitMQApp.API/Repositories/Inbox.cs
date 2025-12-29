@@ -1,0 +1,17 @@
+﻿using Bus.Shared.Events;
+
+namespace RabbitMQApp.API.Repositories;
+
+public class Inbox
+{
+    public int Id { get; set; }
+    public EventType EventType { get; set; }
+
+    public string EventData { get; set; } = string.Empty;
+
+    public DateTime CreatedAt { get; set; }
+
+    public bool IsProcess { get; set; }
+
+
+}
