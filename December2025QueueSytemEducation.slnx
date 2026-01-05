@@ -1,4 +1,5 @@
 <Solution>
   <Project Path="Bus.Shared/Bus.Shared.csproj" Id="9a071aaa-90b1-460e-8ad0-3c6a1534f7b9" />
+  <Project Path="DeadLetterExhangeExampleConsole.App/DeadLetterExhangeExampleConsole.App.csproj" Id="7c9b180c-200e-4eb0-93d7-39a304365532" />
   <Project Path="RabbitMQApp.API/RabbitMQApp.API.csproj" Id="ed76e107-1ec7-48a2-b4da-ceb08602816f" />
 </Solution>
