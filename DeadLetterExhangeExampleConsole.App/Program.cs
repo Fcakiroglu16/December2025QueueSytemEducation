@@ -45,7 +45,7 @@ async Task DeadLetterExchangeExampleMethod()
     await channel.QueueBindAsync(mainQueue, mainExchange, string.Empty, null);
 
 
-    // Declare Dead Letter Exchange and Queue
+// Declare Dead Letter Exchange and Queue
 
     await channel.ExchangeDeclareAsync(deadLetterExchange, ExchangeType.Fanout, true, false, null);
 
@@ -54,14 +54,14 @@ async Task DeadLetterExchangeExampleMethod()
     await channel.QueueBindAsync(deadLetterQueue, deadLetterExchange, string.Empty, null);
 
 
-    // send message to main exchange
+// send message to main exchange
     string messageBody = "Hello, World!";
 
 
     BasicProperties properties = new BasicProperties();
 
     properties.Persistent = true;
-    //properties.Expiration = "10000"; // 10 saniye (milisaniye cinsinden)
+//properties.Expiration = "10000"; // 10 saniye (milisaniye cinsinden)
 
 
     byte[] body = System.Text.Encoding.UTF8.GetBytes(messageBody);
@@ -76,7 +76,7 @@ async Task DeadLetterExchangeExampleMethod()
     {
         try
         {
-            string receivedMessage = System.Text.Encoding.UTF8.GetString(eventArgs.Body.ToArray());
+            var receivedMessage = System.Text.Encoding.UTF8.GetString(eventArgs.Body.ToArray());
             Console.WriteLine($"Received message from dead-letter queue: {receivedMessage}");
             // Acknowledge the message
             await channel.BasicAckAsync(eventArgs.DeliveryTag, false);
@@ -91,3 +91,5 @@ async Task DeadLetterExchangeExampleMethod()
 
     await channel.BasicConsumeAsync(deadLetterQueue, false, consumer);
 }
+
+
