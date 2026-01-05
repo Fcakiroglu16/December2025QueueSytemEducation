@@ -1,12 +1,17 @@
 ﻿// See https://aka.ms/new-console-template for more information
+
+using DeadLetterExhangeExampleConsole.App;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
-//await DeadLetterExchangeExampleMethod();
 
-await DeadLetterExchangeExampleMethod();
-await DeadLetterExchangeExampleWithRequeueMethod();
-await Consumer();
+DirectExchangeExample directExchangeExample = new DirectExchangeExample();
+
+await directExchangeExample.Example();
+
+//await DeadLetterExchangeExampleMethod();
+//await DeadLetterExchangeExampleWithRequeueMethod();
+//await Consumer();
 Console.ReadLine();
 async Task DeadLetterExchangeExampleWithRequeueMethod()
 {
