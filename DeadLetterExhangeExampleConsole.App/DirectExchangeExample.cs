@@ -1,7 +1,8 @@
-﻿using System;
+﻿using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
+using System;
 using System.Collections.Generic;
 using System.Text;
-using RabbitMQ.Client;
 
 namespace DeadLetterExhangeExampleConsole.App
 {
@@ -44,14 +45,6 @@ namespace DeadLetterExhangeExampleConsole.App
             await channel.QueueBindAsync(mainQueue, mainExchange, "abc", null);
 
 
-
-
-
-
-
-
-
-
             await channel.ExchangeDeclareAsync(deadLetterExchange, ExchangeType.Direct, true, false, null);
 
             await channel.QueueDeclareAsync(deadLetterQueue, true, false, false, null);
@@ -75,6 +68,29 @@ namespace DeadLetterExhangeExampleConsole.App
 
 
             Console.WriteLine("Message sent to main exchange");
+
+
+
+
+
+            AsyncEventingBasicConsumer consumer = new AsyncEventingBasicConsumer(channel);
+
+            consumer.ReceivedAsync += async (sender, eventArgs) =>
+            {
+                try
+                {
+                    string receivedMessage = System.Text.Encoding.UTF8.GetString(eventArgs.Body.ToArray());
+                    await channel.BasicAckAsync(eventArgs.DeliveryTag, false);
+
+                }
+                catch (Exception)
+                {
+                    await channel!.BasicNackAsync(eventArgs.DeliveryTag, false, false);
+                }
+
+            };
+
+            await channel.BasicConsumeAsync(mainQueue, false, consumer);
 
         }
     }

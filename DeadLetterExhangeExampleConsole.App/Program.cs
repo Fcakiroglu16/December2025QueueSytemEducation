@@ -143,48 +143,48 @@ async Task DeadLetterExchangeExampleMethod()
 
 
 
-    await channel.ExchangeDeclareAsync(mainExchange, ExchangeType.Fanout, true, false, null);
+    //await channel.ExchangeDeclareAsync(mainExchange, ExchangeType.Fanout, true, false, null);
 
 
-    Dictionary<string, object> arguments = new Dictionary<string, object>()
-    {
-        { "x-dead-letter-exchange", deadLetterExchange },
-        {"x-message-ttl",10000}
-    };
+    //Dictionary<string, object> arguments = new Dictionary<string, object>()
+    //{
+    //    { "x-dead-letter-exchange", deadLetterExchange },
+    //    {"x-message-ttl",10000}
+    //};
 
-    await channel.QueueDeclareAsync(mainQueue, true, false, false, arguments);
-
-
+    //await channel.QueueDeclareAsync(mainQueue, true, false, false, arguments);
 
 
 
-    await channel.QueueBindAsync(mainQueue, mainExchange, string.Empty, null);
 
 
-    // Declare Dead Letter Exchange and Queue
-
-    await channel.ExchangeDeclareAsync(deadLetterExchange, ExchangeType.Fanout, true, false, null);
-
-    await channel.QueueDeclareAsync(deadLetterQueue, true, false, false, null);
-
-    await channel.QueueBindAsync(deadLetterQueue, deadLetterExchange, string.Empty, null);
+    //await channel.QueueBindAsync(mainQueue, mainExchange, string.Empty, null);
 
 
-    // send message to main exchange
-    string messageBody = "Hello, World!";
+    //// Declare Dead Letter Exchange and Queue
+
+    //await channel.ExchangeDeclareAsync(deadLetterExchange, ExchangeType.Fanout, true, false, null);
+
+    //await channel.QueueDeclareAsync(deadLetterQueue, true, false, false, null);
+
+    //await channel.QueueBindAsync(deadLetterQueue, deadLetterExchange, string.Empty, null);
 
 
-    BasicProperties properties = new BasicProperties();
-
-    properties.Persistent = true;
-    //properties.Expiration = "10000"; // 10 saniye (milisaniye cinsinden)
+    //// send message to main exchange
+    //string messageBody = "Hello, World!";
 
 
-    byte[] body = System.Text.Encoding.UTF8.GetBytes(messageBody);
-    await channel.BasicPublishAsync(mainExchange, string.Empty, true, body);
+    //BasicProperties properties = new BasicProperties();
+
+    //properties.Persistent = true;
+    ////properties.Expiration = "10000"; // 10 saniye (milisaniye cinsinden)
 
 
-    Console.WriteLine("Message sent to main exchange. It will be dead-lettered after TTL expires if not consumed.");
+    //byte[] body = System.Text.Encoding.UTF8.GetBytes(messageBody);
+    //await channel.BasicPublishAsync(mainExchange, string.Empty, true, body);
+
+
+    //Console.WriteLine("Message sent to main exchange. It will be dead-lettered after TTL expires if not consumed.");
 
     AsyncEventingBasicConsumer consumer = new AsyncEventingBasicConsumer(channel);
 
