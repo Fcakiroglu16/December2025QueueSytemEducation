@@ -1,7 +1,7 @@
-﻿using Bus.Shared;
+﻿using System.Text.Json;
+using Bus.Shared;
 using Bus.Shared.Events;
 using RabbitMQApp.API.Repositories;
-using System.Text.Json;
 
 namespace RabbitMQApp.API.Consumers;
 
@@ -11,17 +11,17 @@ public class UserCreatedEventInboxConsumer(IServiceProvider serviceProvider, IBu
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            using IServiceScope scope = serviceProvider.CreateScope();
-            AppDbContext dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            using var scope = serviceProvider.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
 
             var inboxMessages = dbContext.Inboxes
                 .Where(x => x.EventType == EventType.UserCreated && x.IsProcess == false).Take(100).ToList();
 
 
-            foreach (Inbox? inboxMessage in inboxMessages)
+            foreach (var inboxMessage in inboxMessages)
             {
-                UserCreatedEvent? userCreatedEvent = JsonSerializer.Deserialize<UserCreatedEvent>(inboxMessage.EventData);
+                var userCreatedEvent = JsonSerializer.Deserialize<UserCreatedEvent>(inboxMessage.EventData);
 
 
                 var discount = new Discount

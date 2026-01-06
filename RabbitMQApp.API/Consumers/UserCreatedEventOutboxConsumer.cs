@@ -1,7 +1,7 @@
-﻿using Bus.Shared;
+﻿using System.Text.Json;
+using Bus.Shared;
 using Bus.Shared.Events;
 using RabbitMQApp.API.Repositories;
-using System.Text.Json;
 
 namespace RabbitMQApp.API.Consumers;
 
@@ -12,15 +12,15 @@ public class UserCreatedEventOutboxConsumer(IServiceProvider serviceProvider, IB
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            using IServiceScope scope = serviceProvider.CreateScope();
-            AppDbContext dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            using var scope = serviceProvider.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
 
             var outboxMessages = dbContext.OutBoxes
                 .Where(ob => ob.EventType == EventType.UserCreated && !ob.IsSent).Take(100).ToList();
 
 
-            foreach (OutBox? outboxMessage in outboxMessages)
+            foreach (var outboxMessage in outboxMessages)
             {
                 var headers = new Dictionary<string, object?>
                 {
@@ -28,7 +28,7 @@ public class UserCreatedEventOutboxConsumer(IServiceProvider serviceProvider, IB
                     { "event-type", outboxMessage.EventType }
                 };
 
-                UserCreatedEvent? userCreatedEvent = JsonSerializer.Deserialize<UserCreatedEvent>(outboxMessage.EventData);
+                var userCreatedEvent = JsonSerializer.Deserialize<UserCreatedEvent>(outboxMessage.EventData);
 
 
                 await busService.PublishWithAck(userCreatedEvent, headers!);

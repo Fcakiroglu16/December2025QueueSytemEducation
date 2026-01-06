@@ -1,10 +1,8 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-using DeadLetterExhangeExampleConsole.App;
+using System.Text;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using System.Text;
-using System.Threading.Channels;
 
 //var directExchangeExample = new DirectExchangeExample();
 
@@ -25,7 +23,7 @@ async Task DeadLetterExchangeExampleWithRequeueMethod()
     const string deadLetterExchange = "dead.letter.exchange";
     const string deadLetterQueue = "dead.letter.queue";
 
-    ConnectionFactory connectionFactory = new ConnectionFactory
+    var connectionFactory = new ConnectionFactory
     {
         Uri = new Uri("amqps://enudhixi:gaGLgyyYazzQvgD8ohyn2ayfg8AzqQp5@gorilla.lmq.cloudamqp.com/enudhixi")
     };
@@ -126,10 +124,10 @@ async Task DeadLetterExchangeExampleMethod()
     using var channel = await connection.CreateChannelAsync();
 
 
-    await channel.ExchangeDeclareAsync(mainExchange, ExchangeType.Fanout, true, false, null);
+    await channel.ExchangeDeclareAsync(mainExchange, ExchangeType.Fanout, true, false);
 
 
-    Dictionary<string, object> arguments = new Dictionary<string, object>()
+    var arguments = new Dictionary<string, object>
     {
         { "x-dead-letter-exchange", deadLetterExchange },
         { "x-message-ttl", 10000 }
@@ -138,29 +136,29 @@ async Task DeadLetterExchangeExampleMethod()
     await channel.QueueDeclareAsync(mainQueue, true, false, false, arguments);
 
 
-    await channel.QueueBindAsync(mainQueue, mainExchange, string.Empty, null);
+    await channel.QueueBindAsync(mainQueue, mainExchange, string.Empty);
 
 
     // Declare Dead Letter Exchange and Queue
 
-    await channel.ExchangeDeclareAsync(deadLetterExchange, ExchangeType.Fanout, true, false, null);
+    await channel.ExchangeDeclareAsync(deadLetterExchange, ExchangeType.Fanout, true, false);
 
-    await channel.QueueDeclareAsync(deadLetterQueue, true, false, false, null);
+    await channel.QueueDeclareAsync(deadLetterQueue, true, false, false);
 
-    await channel.QueueBindAsync(deadLetterQueue, deadLetterExchange, string.Empty, null);
+    await channel.QueueBindAsync(deadLetterQueue, deadLetterExchange, string.Empty);
 
 
     // send message to main exchange
-    string messageBody = "Hello, World!";
+    var messageBody = "Hello, World!";
 
 
-    BasicProperties properties = new BasicProperties();
+    var properties = new BasicProperties();
 
     properties.Persistent = true;
     //properties.Expiration = "10000"; // 10 saniye (milisaniye cinsinden)
 
 
-    byte[] body = System.Text.Encoding.UTF8.GetBytes(messageBody);
+    var body = Encoding.UTF8.GetBytes(messageBody);
     await channel.BasicPublishAsync(mainExchange, string.Empty, true, body);
 
 
