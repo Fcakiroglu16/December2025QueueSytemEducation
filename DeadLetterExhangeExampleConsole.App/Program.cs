@@ -1,19 +1,18 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-using System.Text;
 using DeadLetterExhangeExampleConsole.App;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using System.Text;
+using System.Threading.Channels;
 
-var directExchangeExample = new DirectExchangeExample();
+//var directExchangeExample = new DirectExchangeExample();
 
-await directExchangeExample.Example();
+//await directExchangeExample.Example();
 
 //await DeadLetterExchangeExampleMethod();
-//await DeadLetterExchangeExampleWithRequeueMethod();
-//await Consumer();
+await DeadLetterExchangeExampleWithRequeueMethod();
 
-Console.ReadLine();
 
 async Task DeadLetterExchangeExampleWithRequeueMethod()
 {
@@ -26,9 +25,9 @@ async Task DeadLetterExchangeExampleWithRequeueMethod()
     const string deadLetterExchange = "dead.letter.exchange";
     const string deadLetterQueue = "dead.letter.queue";
 
-    var connectionFactory = new ConnectionFactory
+    ConnectionFactory connectionFactory = new ConnectionFactory
     {
-        HostName = "localhost"
+        Uri = new Uri("amqps://enudhixi:gaGLgyyYazzQvgD8ohyn2ayfg8AzqQp5@gorilla.lmq.cloudamqp.com/enudhixi")
     };
 
 
@@ -80,20 +79,7 @@ async Task DeadLetterExchangeExampleWithRequeueMethod()
     await channel.BasicPublishAsync(mainExchange, string.Empty, true, body);
 
 
-    Console.WriteLine("Message sent to main exchange. It will be dead-lettered after TTL expires if not consumed.");
-}
-
-async Task Consumer()
-{
-    var connectionFactory = new ConnectionFactory
-    {
-        HostName = "localhost"
-    };
-
-    using var connection = await connectionFactory.CreateConnectionAsync();
-
-    using var channel1 = await connection.CreateChannelAsync();
-    var consumer = new AsyncEventingBasicConsumer(channel1);
+    var consumer = new AsyncEventingBasicConsumer(channel);
     consumer.ReceivedAsync += async (sender, eventArgs) =>
     {
         Console.WriteLine($"Message Processing-{eventArgs.DeliveryTag}");
@@ -102,18 +88,21 @@ async Task Consumer()
         {
             var receivedMessage = Encoding.UTF8.GetString(eventArgs.Body.ToArray());
             // Acknowledge the message
-            await channel1.BasicAckAsync(eventArgs.DeliveryTag, false);
+            await channel.BasicAckAsync(eventArgs.DeliveryTag, false);
             Console.WriteLine($"Message Acknowledged-{eventArgs.DeliveryTag}");
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex.Message);
-            await channel1!.BasicNackAsync(eventArgs.DeliveryTag, false, true);
+            await channel!.BasicNackAsync(eventArgs.DeliveryTag, false, true);
         }
     };
 
-    await channel1.BasicConsumeAsync("main.queue", false, consumer);
+    await channel.BasicConsumeAsync("main.queue", false, consumer);
+
+    Console.ReadLine();
 }
+
 
 async Task DeadLetterExchangeExampleMethod()
 {
@@ -195,4 +184,5 @@ async Task DeadLetterExchangeExampleMethod()
     };
 
     await channel.BasicConsumeAsync(deadLetterQueue, false, consumer);
+    Console.ReadLine();
 }

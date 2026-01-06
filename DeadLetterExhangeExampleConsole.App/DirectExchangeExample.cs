@@ -80,8 +80,11 @@ namespace DeadLetterExhangeExampleConsole.App
                 try
                 {
                     string receivedMessage = System.Text.Encoding.UTF8.GetString(eventArgs.Body.ToArray());
-                    await channel.BasicAckAsync(eventArgs.DeliveryTag, false);
 
+
+                    Console.WriteLine($"Received Message: {receivedMessage}");
+
+                    await channel.BasicAckAsync(eventArgs.DeliveryTag, false);
                 }
                 catch (Exception)
                 {
@@ -91,7 +94,7 @@ namespace DeadLetterExhangeExampleConsole.App
             };
 
             await channel.BasicConsumeAsync(mainQueue, false, consumer);
-
+            Console.ReadLine();
         }
     }
 }
