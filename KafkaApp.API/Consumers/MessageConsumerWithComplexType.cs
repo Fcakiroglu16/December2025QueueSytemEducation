@@ -1,24 +1,27 @@
-﻿using Confluent.Kafka;
+﻿using System.Text;
+using Confluent.Kafka;
+using KafkaApp.API.ConsumerSerializer;
+using KafkaApp.API.Events;
 using static Confluent.Kafka.ConfigPropertyNames;
 
 namespace KafkaApp.API.Consumers
 {
-    public class MessageConsumerWithNoAck(IConfiguration configuration) : BackgroundService
+    public class MessageConsumerWithComplexType(IConfiguration configuration) : BackgroundService
     {
-        private IConsumer<Null, string> consumer;
+        private IConsumer<Guid, UserCreatedEvent> consumer;
 
         public override Task StartAsync(CancellationToken cancellationToken)
         {
             var consumerConfig = new ConsumerConfig
             {
                 BootstrapServers = configuration["Kafka:BootstrapServers"],
-                GroupId = "b",
+                GroupId = "c",
                 AutoOffsetReset = AutoOffsetReset.Earliest,
-                EnableAutoCommit = false
-                //IsolationLevel = IsolationLevel.ReadCommitted
             };
-            consumer = new ConsumerBuilder<Null, string>(consumerConfig).Build();
-            consumer.Subscribe("topic-at-least-once");
+            consumer = new ConsumerBuilder<Guid, UserCreatedEvent>(consumerConfig)
+                .SetKeyDeserializer(new ConsumerDeserializer<Guid>())
+                .SetValueDeserializer(new ConsumerDeserializer<UserCreatedEvent>()).Build();
+            consumer.Subscribe("topic-with-complex-type");
             return base.StartAsync(cancellationToken);
         }
 
@@ -42,8 +45,16 @@ namespace KafkaApp.API.Consumers
                     }
 
 
+                    // check header version
+
+                    if (consumeResult.Message.Headers.TryGetLastBytes("version", out byte[] versionHeader))
+                    {
+                        var version = Encoding.UTF8.GetString(versionHeader);
+                        Console.WriteLine($"Message version: {version}");
+                    }
+
                     Console.WriteLine(
-                        $"Consumed message '{consumeResult.Message.Value}' at: '{consumeResult.TopicPartitionOffset}'.");
+                        $"Consumed message ' Email={consumeResult.Message.Value.Email}' at: '{consumeResult.TopicPartitionOffset}'.");
                 }
                 catch (Exception e)
                 {
