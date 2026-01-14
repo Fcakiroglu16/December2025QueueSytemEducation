@@ -1,6 +1,6 @@
 <Solution>
+  <Project Path="../RedisApp/RedisApp.csproj" Id="28cd4169-b08e-4d2b-b91d-9768173d3c79" />
   <Project Path="docker-compose.dcproj">
     <Build />
   </Project>
-  <Project Path="KafkaApp.API/KafkaApp.API.csproj" Id="70836c1b-4945-4bc3-a5d9-bb35740b907a" />
 </Solution>
