@@ -1,0 +1,18 @@
+@RedisApp_HostAddress = http://localhost:5248
+
+GET {{RedisApp_HostAddress}}/pub-sub
+Accept: application/json
+###
+GET {{RedisApp_HostAddress}}/pub-sub-with-pattern
+Accept: application/json
+###
+GET {{RedisApp_HostAddress}}/redis-stream
+Accept: application/json
+###
+###
+GET {{RedisApp_HostAddress}}/redis-stream-with-complex-type
+Accept: application/json
+###
+
+
+

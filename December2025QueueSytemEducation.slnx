@@ -1,6 +1,6 @@
 <Solution>
-  <Project Path="../RedisApp/RedisApp.csproj" Id="28cd4169-b08e-4d2b-b91d-9768173d3c79" />
   <Project Path="docker-compose.dcproj">
     <Build />
   </Project>
+  <Project Path="RedisApp/RedisApp.csproj" />
 </Solution>
