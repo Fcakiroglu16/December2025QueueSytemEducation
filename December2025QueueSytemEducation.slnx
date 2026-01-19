@@ -1,6 +1,3 @@
 <Solution>
-  <Project Path="docker-compose.dcproj">
-    <Build />
-  </Project>
-  <Project Path="RedisApp/RedisApp.csproj" />
+  <Project Path="ChannelExample.API/ChannelExample.API.csproj" Id="88c00b7d-27ea-4ffb-b204-242e605bb522" />
 </Solution>

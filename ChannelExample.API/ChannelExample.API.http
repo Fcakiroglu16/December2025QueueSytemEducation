@@ -1,0 +1,10 @@
+@ChannelExample.API_HostAddress = http://localhost:5231
+
+GET {{ChannelExample.API_HostAddress}}/order-created-event-write/
+Accept: application/json
+###
+GET {{ChannelExample.API_HostAddress}}/user-created-event-write/
+Accept: application/json
+###
+
+
